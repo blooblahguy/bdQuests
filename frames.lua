@@ -46,7 +46,7 @@ function bdq.main:update(self, event, ...)
 	end
 
 	if (event == "QUEST_REMOVED") then
-		questID = ...
+		local questID = ...
 		local questName = C_TaskQuest.GetQuestInfoByQuestID(questID)
 		if questName and ActiveWorldQuests[ questName ] then
 			ActiveWorldQuests[ questName ] = nil
@@ -57,7 +57,7 @@ function bdq.main:update(self, event, ...)
 	end
 
 	if (event == "UNIT_QUEST_LOG_CHANGED") then
-		
+		local unitID = ...
 	end
 
 	-- Activity Bar
