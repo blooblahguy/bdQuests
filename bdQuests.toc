@@ -5,6 +5,7 @@
 ## LoadOnDemand: 0
 ## Dependencies: bdCore
 
+init.lua
 config.lua
 functions.lua
 frames.lua

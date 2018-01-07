@@ -1,2 +1,2 @@
 local addon, bdq = ...
-
+local config = bdCore.config.profile['Quests']

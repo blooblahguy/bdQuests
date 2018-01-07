@@ -1,5 +1,5 @@
 local addon, bdq = ...
-
+local config = bdCore.config.profile['Quests']
 
 local function GetQuestProgress(unitID)
 	--if not QuestPlatesEnabled or not name then return end
@@ -92,7 +92,7 @@ QuestLogIndex = {} -- [questName] = questLogIndex, this is to "quickly" look up 
 
 
 local QuestPlates = {} -- [plate] = f
-function E:OnNewPlate(f, plate)
+function OnNewPlate(f, plate)
 	local frame = CreateFrame('frame', nil, f)
 	frame:Hide()
 	frame:SetAllPoints(f)
@@ -236,10 +236,10 @@ local function UpdateQuestIcon(plate, unitID)
 		--Q:Show()
 	else
 		Q:Hide()
-	end	
+	end
+end
 
-
-function E:OnPlateShow(f, plate, unitID)
+function OnPlateShow(f, plate, unitID)
 	UpdateQuestIcon(plate, unitID)
 end
 
@@ -265,7 +265,7 @@ local function CacheQuestIndexes()
 	end
 end
 
-function E:UNIT_QUEST_LOG_CHANGED(unitID)
+function UNIT_QUEST_LOG_CHANGED(unitID)
 	if unitID == 'player' then
 		CacheQuestIndexes()
 	end
@@ -275,15 +275,15 @@ function E:UNIT_QUEST_LOG_CHANGED(unitID)
 	end
 end
 
-function E:QUEST_LOG_UPDATE()
+function QUEST_LOG_UPDATE()
 	CacheQuestIndexes()
 end
-E:UnregisterEvent('QUEST_LOG_UPDATE')
+--E:UnregisterEvent('QUEST_LOG_UPDATE')
 
-function E:PLAYER_LEAVING_WORLD()
+function PLAYER_LEAVING_WORLD()
 	E:UnregisterEvent('QUEST_LOG_UPDATE')
 end
 
-function E:PLAYER_ENTERING_WORLD()
+function PLAYER_ENTERING_WORLD()
 	E:RegisterEvent('QUEST_LOG_UPDATE')
 end

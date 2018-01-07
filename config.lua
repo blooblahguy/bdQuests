@@ -33,6 +33,9 @@ c[#c+1] = {tab = {
 }}
 
 
+bdCore:addModule("Quests", c)
+local config = bdCore.config.profile['Quests']
+
 SetCVar('showQuestTrackingTooltips', '1')
 SetCVar('UnitNameFriendlySpecialNPCName', 1)
 SetCVar('showQuestUnitCircles', 1)
