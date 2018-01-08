@@ -1,6 +1,8 @@
 local addon, bdq = ...
 local config = bdCore.config.profile['Quests']
 
+--[[
+
 -- Main Window
 bdq.main = CreateFrame("frame", 'bdQuests', UIParent)
 bdq.main:SetSize(config.width, config.height)
@@ -11,41 +13,81 @@ bdCore:makeMovable(bdq.main)
 local aq = bdq.activeQuests
 local awq = bdq.activeWorldQuests
 
-local headerframes = {}
-local titleframes = {}
-local objectiveframes = {}
+-- for positioning
+local activeFrames = {}
 
-function bdq:CreateHeader(text)
-	local frame = table.remove(headerframes) or CreateFrame("Frame", nil, UIParent)
+-- frame caches
+local headerframes = {}
+local questframes = {}
+
+function bdq:CreateCategory(name, subtext)
+	local frame = CreateFrame("Frame", nil, bdq.main)
+	frame:SetWidth(config.width)
+	frame:SetHeight(30)
+	bdCore:setBackdrop(frame)
+	frame.text = frame:CreateFontString(nil)
+	frame.text:SetFont(bdCore.media.font, 16, "OUTLINE")
+	frame.text:SetText(name)
+	frame.text:SetTextColor(unpack(bdCore.media.blue))
+	frame.text:SetJustifyH("CENTER")
+	frame.text:SetAllPoints()
+
+	if (subtext) then
+		frame.subtext = frame:CreateFontString(nil)
+		frame.subtext:SetFont(bdCore.media.font, 14, "OUTLINE")
+		frame.subtext:SetText(subtext)
+		frame.subtext:SetTextColor(unpack(bdCore.media.blue))
+		frame.subtext:SetJustifyH("CENTER")
+		frame.subtext:SetPoint("BOTTOM", frame, "BOTTOM", 0, 4)
+
+		frame.text:ClearAllPoints()
+		frame.text:SetPoint("TOP", frame, "TOP", 0, -4)
+
+		frame:SetHeight(40)
+	else
+
+	end
+
+	activeFrames[name] = {}
+
+	return frame
 end
 
-function bdq:CreateTitle(text)
+-- category frames
+local instance = bdq:CreateCategory("Dungeon", "TRIAL OF VALOR")
+instance:SetPoint("TOP", bdq.main, "TOP", 0, 2)
+
+local world_quests = bdq:CreateCategory("World Quests")
+world_quests:SetPoint("TOP", instance, "BOTTOM", 0, -2)
+world_quests.lastframe = world_quests
+
+local quests = bdq:CreateCategory("Quests")
+quests:SetPoint("TOP", world_quests.lastframe, "BOTTOM", 0, -2)
+-- used for active scenario or dungeon
+
+
+function bdq:repositionFrames()
+
+end
+
+-- creates quest category, like zone or isntance name
+function bdq:CreateHeader(text, category)
+	local frame = table.remove(headerframes) or CreateFrame("Frame", nil, UIParent)
+
+	frame:SetWidth(config.width - 20)
+	frame:SetHeight(30)
+	frame.text = frame.text or frame:CreateFontString(nil)
+	frame.text:SetFont(bdCore.media.font, 13)
+	frame.text:SetJustifyH("LEFT")
+	frame.text:SetJustifyV("CENTER")
+	frame.text:SetAllPoints()
+
+	return frame
+end
+
+function bdq:CreateQuest(text, header, category)
 	local frame = table.remove(titleframes) or CreateFrame("Frame", nil, UIParent)
 end
-
-
---[[
-for i = 1, 30 do
-	local entry = CreateFrame("frame", "bdQuests_"..i, bdq.main)
-
-	entry.title = CreateFrame("frame", nil, entry)
-	entry.title.text = entry.title:CreateFontString(nil)
-	entry.title.text:SetAllPoints()
-	entry.title.text:SetJustifyH("CENTER")
-	entry.title.text:SetFont(bdCore.media.font, 13)
-	entry.title.text:SetTextColor(unpack(bdCore.media.blue))
-	entry.title.SetText = entry.title.text.SetText
-
-	entry.info = CreateFrame("frame", nil, entry)
-	entry.info.text = entry.info.text:CreateFontString(nil)
-	entry.info.text:SetAllPoints()
-	entry.info.text:SetJustifyH("LEFT")
-	entry.info.text:SetFont(bdCore.media.font, 13)
-	entry.info.SetText = entry.info.text.SetText
-
-
-end--]]
-
 
 local QuestLogIndex = {}
 local QuestObjectiveStrings = {}
@@ -105,7 +147,7 @@ function bdq.update(self, event, ...)
 	if (event == "QUEST_REMOVED") then
 		local questID = ...
 		local questName = C_TaskQuest.GetQuestInfoByQuestID(questID)
-		if questName and ActiveWorldQuests[ questName ] then
+		if questName and awq[ questName ] then
 			awq[ questName ] = nil
 			print('TASK_QUEST_REMOVED', questID, questName)
 			-- get task progress when it's updated to display on the nameplate
@@ -134,10 +176,7 @@ function bdq.update(self, event, ...)
 				--print(title,isTask)
 			end
 		end
-		
-		--[[for plate, f in pairs(addon:GetActiveNameplates()) do
-			UpdateQuestIcon(plate, f._unitID)
-		end--]]
+
 	end
 
 	-- Activity Bar
@@ -145,7 +184,7 @@ function bdq.update(self, event, ...)
 	-- Quest progress/displays
 	--print(aq, #aq)
 	for k, v in pairs(aq) do
-		print(k, unpack(v))
+		--print(k, unpack(v))
 	end
 	
 	bdq:redraw();
@@ -157,6 +196,8 @@ bdq.main:RegisterEvent("QUEST_REMOVED")
 bdq.main:RegisterEvent("UNIT_QUEST_LOG_CHANGED")
 bdq.main:RegisterEvent("QUEST_LOG_UPDATE")
 bdq.main:SetScript("OnEvent", bdq.update)
+
+--]]
 
 -- display
 	-- summary bar (# completed, # within 500 yds, x/25 if > 20)
