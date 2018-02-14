@@ -9,6 +9,7 @@ c[#c+1] = {tab = {
 	value = "Sizing & Display"
 }}
 	c[#c+1] = {height = {
+		label = "Height",
 		type= "slider",
 		value=500,
 		min=100,
@@ -18,6 +19,7 @@ c[#c+1] = {tab = {
 	}}
 
 	c[#c+1] = {width = {
+		label = "Width",
 		type= "slider",
 		value=250,
 		min=100,

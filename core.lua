@@ -1,15 +1,50 @@
 local addon, bdq = ...
 local config = bdCore.config.profile['Quests']
 
--- try with just reskinning?
+-------------------------------------------------------
+-- 
+-------------------------------------------------------
+--parent frame 
+local frame = CreateFrame("Frame", "bdQuests", UIParent) 
+frame:SetSize(150, 200) 
+frame:SetPoint("CENTER") 
+frame.scrollframe = CreateFrame("ScrollFrame", nil, frame) 
+frame.scrollframe:SetPoint("TOPLEFT", 10, -10) 
+frame.scrollframe:SetPoint("BOTTOMRIGHT", -10, 10) 
+frame.scrollbar = CreateFrame("Slider", nil, frame.scrollframe, "UIPanelScrollBarTemplate") 
+frame.scrollbar:SetPoint("TOPLEFT", frame, "TOPRIGHT", 4, -16) 
+frame.scrollbar:SetPoint("BOTTOMLEFT", frame, "BOTTOMRIGHT", 4, 16) 
+frame.scrollbar:SetMinMaxValues(1, 200) 
+frame.scrollbar:SetValueStep(1) 
+frame.scrollbar.scrollStep = 1
+frame.scrollbar:SetValue(0) 
+frame.scrollbar:SetWidth(16) 
+frame.scrollbar:SetScript("OnValueChanged", 
+function (self, value) 
+	self:GetParent():SetVerticalScroll(value) 
+end) 
+ 
+--content frame 
+frame.scrollframe.content = CreateFrame("Frame", nil, frame.scrollframe) 
+frame.scrollframe.content:SetSize(128, 128) 
+frame.scrollframe:SetScrollChild(frame.scrollframe.content)
+
+local main = frame.scrollframe.content
+
+bdCore:makeMovable(frame)
+-- bdCore:setBackdrop(main)
+
 bdq.main = CreateFrame("frame", "bdQuests", UIParent)
-bdq.main:SetSize(config.width + 6, config.height)
-bdq.main:SetPoint("RIGHT", UIParent, "RIGHT", -20, 0)
+-- bdq.main:SetSize(config.width + 46, config.height)
+-- bdq.main:SetPoint("RIGHT", UIParent, "RIGHT", -20, 0)
+
+
+--[[
 --scrollframe 
 local scrollframe = CreateFrame("ScrollFrame", nil, bdq.main) 
 scrollframe:SetAllPoints()
 local mask = CreateFrame("Frame", nil, scrollframe) 
-mask:SetSize(config.width + 6, config.height + 4)
+mask:SetSize(config.width + 140, config.height + 4)
 local scrollbar = CreateFrame("Slider", nil, scrollframe, "UIPanelScrollBarTemplate") 
 scrollbar:SetPoint("TOPLEFT", bdq.main, "TOPRIGHT", 4, -14) 
 scrollbar:SetPoint("BOTTOMLEFT", bdq.main, "BOTTOMRIGHT", 4, 14) 
@@ -33,14 +68,22 @@ scrollframe:SetScrollChild(mask)
 
 bdq.main.content = CreateFrame("Frame", nil, mask)
 bdq.main.content:SetSize(config.width, 30)
-bdq.main.content:SetPoint("TOPLEFT", mask, "TOPLEFT", 2, -3)
-bdq.main.content:SetPoint("BOTTOMRIGHT", mask, "BOTTOMRIGHT", -2, 2)
+bdq.main.content:SetPoint("TOP", mask, "TOP", -10, 0)
+bdq.main.content:SetPoint("BOTTOM", mask, "BOTTOM", -10, 0)
+--]]
 
-bdCore:makeMovable(bdq.main)
+-- local bdq.main = 
 
-local main = bdq.main
-ObjectiveTrackerBlocksFrame:SetParent(bdq.main.content)
-ObjectiveTrackerBlocksFrame:SetAllPoints()
+
+LoadAddOn('Blizzard_ObjectiveTracker')
+-- ObjectiveTrackerFrame:ClearAllPoints()
+-- ObjectiveTrackerFrame:SetParent(bdq.main.content)
+-- ObjectiveTrackerFrame:SetPoint("TOPLEFT", bdq.main.content, "TOPLEFT")
+-- ObjectiveTrackerFrame:SetPoint("BOTTOMRIGHT", bdq.main.content, "BOTTOMRIGHT")
+
+ObjectiveTrackerBlocksFrame:SetParent(main)
+ObjectiveTrackerBlocksFrame:ClearAllPoints()
+ObjectiveTrackerBlocksFrame:SetPoint("TOPLEFT", main, "TOPLEFT", 0)
 
 local function reskinHeader(header)
 
