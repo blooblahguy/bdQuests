@@ -1,4 +1,4 @@
-## Interface: 70300
+## Interface: 80000
 ## Title: |cffA02C2Fbd|rQuests
 ## Version: @project-version@
 ## DefaultState: Enabled
