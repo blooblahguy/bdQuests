@@ -4,7 +4,63 @@ local config = bdCore.config.profile['Quests']
 -------------------------------------------------------
 -- 
 -------------------------------------------------------
+
+
+function createScrollFrame()
+	--parent frame 
+	local frame = CreateFrame("Frame", "MyFrame", UIParent) 
+	frame:SetSize(config.width, config.height) 
+	frame:SetPoint("CENTER") 
+	
+	local texture = frame:CreateTexture() 
+	texture:SetAllPoints() 
+	texture:SetTexture(1,1,1,1) 
+	frame.background = texture 
+
+	--scrollframe 
+	scrollframe = CreateFrame("ScrollFrame", nil, frame) 
+	scrollframe:SetPoint("TOPLEFT", 10, -10) 
+	scrollframe:SetPoint("BOTTOMRIGHT", -10, 10) 
+	local texture = scrollframe:CreateTexture() 
+	texture:SetAllPoints() 
+	texture:SetTexture(.5,.5,.5,1) 
+	frame.scrollframe = scrollframe 
+
+	--scrollbar 
+	scrollbar = CreateFrame("Slider", nil, scrollframe, "UIPanelScrollBarTemplate") 
+	scrollbar:SetPoint("TOPLEFT", frame, "TOPRIGHT", 4, -16) 
+	scrollbar:SetPoint("BOTTOMLEFT", frame, "BOTTOMRIGHT", 4, 16) 
+	scrollbar:SetMinMaxValues(1, 200) 
+	scrollbar:SetValueStep(1) 
+	scrollbar.scrollStep = 1 
+	scrollbar:SetValue(0) 
+	scrollbar:SetWidth(16) 
+	scrollbar:SetScript("OnValueChanged", 
+	function (self, value) 
+	self:GetParent():SetVerticalScroll(value) 
+	end) 
+	local scrollbg = scrollbar:CreateTexture(nil, "BACKGROUND") 
+	scrollbg:SetAllPoints(scrollbar) 
+	scrollbg:SetTexture(0, 0, 0, 0.4) 
+	frame.scrollbar = scrollbar 
+
+	--content frame 
+	local content = CreateFrame("Frame", nil, scrollframe) 
+	content:SetSize(config.width, 2000) 
+	local texture = content:CreateTexture() 
+	texture:SetAllPoints() 
+	texture:SetTexture("Interface\\GLUES\\MainMenu\\Glues-BlizzardLogo") 
+	content.texture = texture 
+	scrollframe.content = content 
+
+	scrollframe:SetScrollChild(content)
+
+	return content
+end
+
+-- createScrollFrame()
 --parent frame 
+--[[
 local frame = CreateFrame("Frame", "bdQuests", UIParent) 
 frame:SetSize(150, 200) 
 frame:SetPoint("CENTER") 
@@ -31,7 +87,7 @@ frame.scrollframe:SetScrollChild(frame.scrollframe.content)
 
 local main = frame.scrollframe.content
 
-bdCore:makeMovable(frame)
+bdCore:makeMovable(frame)--]]
 -- bdCore:setBackdrop(main)
 
 bdq.main = CreateFrame("frame", "bdQuests", UIParent)
@@ -39,7 +95,6 @@ bdq.main = CreateFrame("frame", "bdQuests", UIParent)
 -- bdq.main:SetPoint("RIGHT", UIParent, "RIGHT", -20, 0)
 
 
---[[
 --scrollframe 
 local scrollframe = CreateFrame("ScrollFrame", nil, bdq.main) 
 scrollframe:SetAllPoints()
@@ -70,7 +125,7 @@ bdq.main.content = CreateFrame("Frame", nil, mask)
 bdq.main.content:SetSize(config.width, 30)
 bdq.main.content:SetPoint("TOP", mask, "TOP", -10, 0)
 bdq.main.content:SetPoint("BOTTOM", mask, "BOTTOM", -10, 0)
---]]
+
 
 -- local bdq.main = 
 
@@ -80,10 +135,13 @@ LoadAddOn('Blizzard_ObjectiveTracker')
 -- ObjectiveTrackerFrame:SetParent(bdq.main.content)
 -- ObjectiveTrackerFrame:SetPoint("TOPLEFT", bdq.main.content, "TOPLEFT")
 -- ObjectiveTrackerFrame:SetPoint("BOTTOMRIGHT", bdq.main.content, "BOTTOMRIGHT")
+bdq.anchor = CreateFrame("frame", "bdQuests", UIParent)
+bdq.anchor:SetSize(config.width, 40)
+bdq.anchor:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -20, -240)
+bdCore:makeMovable(bdq.anchor)
 
-ObjectiveTrackerBlocksFrame:SetParent(main)
-ObjectiveTrackerBlocksFrame:ClearAllPoints()
-ObjectiveTrackerBlocksFrame:SetPoint("TOPLEFT", main, "TOPLEFT", 0)
+-- ObjectiveTrackerBlocksFrame:SetParent(main)
+ObjectiveTrackerBlocksFrame:SetPoint("TOPLEFT", bdq.anchor, "TOPLEFT", 0)
 
 local function reskinHeader(header)
 
@@ -142,6 +200,7 @@ DEFAULT_OBJECTIVE_TRACKER_MODULE.fromHeaderOffsetY = -10
 DEFAULT_OBJECTIVE_TRACKER_MODULE.fromModuleOffsetY = -20
 DEFAULT_OBJECTIVE_TRACKER_MODULE.lineSpacing = 8
 
+-- local scrollHeight = 0
 bdq.main:SetScript("OnUpdate", function()
 	noAnimation(ObjectiveTrackerBlocksFrame)
 	--ObjectiveTrackerBlocksFrame:StopAnimating()
@@ -149,7 +208,7 @@ bdq.main:SetScript("OnUpdate", function()
 	-- Headers
 	local children = {ObjectiveTrackerBlocksFrame:GetChildren()}
 	for k, frame in pairs(children) do
-
+		-- scrollHeight = scrollHeight + frame:GetHeight()
 		-- World Quests
 		if (frame.ScrollContents and not frame.hooked) then
 			frame.hooked = true
