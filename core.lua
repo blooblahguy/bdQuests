@@ -153,6 +153,9 @@ local function noAnimation(frame)
 
 	for k, frame in pairs(children) do
 		local ani_group = {frame:GetAnimationGroups()}
+		-- user placed frames don't animate
+		frame:SetUserPlaced(true)
+		frame:SetDontSavePosition(true)
 		if (not ani_group.hooked) then
 			if (ani_group) then
 				for a, anis in pairs(ani_group) do
@@ -163,6 +166,7 @@ local function noAnimation(frame)
 						as:SetDuration(0)
 						as:SetStartDelay(0)
 						as:SetEndDelay(0)
+
 					end
 				end
 			end
@@ -200,7 +204,7 @@ DEFAULT_OBJECTIVE_TRACKER_MODULE.fromHeaderOffsetY = -10
 DEFAULT_OBJECTIVE_TRACKER_MODULE.fromModuleOffsetY = -20
 DEFAULT_OBJECTIVE_TRACKER_MODULE.lineSpacing = 8
 
--- local scrollHeight = 0
+-- todo: move this to an event system rather than on update
 bdq.main:SetScript("OnUpdate", function()
 	noAnimation(ObjectiveTrackerBlocksFrame)
 	--ObjectiveTrackerBlocksFrame:StopAnimating()
@@ -287,7 +291,6 @@ bdq.main:SetScript("OnUpdate", function()
 
 		end
 	end
-
 end)
 
 
