@@ -154,6 +154,7 @@ local function noAnimation(frame)
 	for k, frame in pairs(children) do
 		local ani_group = {frame:GetAnimationGroups()}
 		-- user placed frames don't animate
+		frame:SetMovable(true)
 		frame:SetUserPlaced(true)
 		frame:SetDontSavePosition(true)
 		if (not ani_group.hooked) then
