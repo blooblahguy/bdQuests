@@ -151,6 +151,15 @@ local function noAnimation(frame)
 	if (not frame) then return end
 	local children = {frame:GetChildren()}
 
+	-- user placed frames don't animate
+	frame:SetMovable(true)
+	frame:SetUserPlaced(true)
+	frame:SetDontSavePosition(true)
+
+	-- if (frame:GetObjectType() == "button") {
+
+	-- }
+
 	for k, frame in pairs(children) do
 		local ani_group = {frame:GetAnimationGroups()}
 		-- user placed frames don't animate
